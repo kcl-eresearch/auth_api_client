@@ -11,7 +11,7 @@ def load_config():
     global config
 
     try:
-        with open("/etc/auth_api.yaml") as fh:
+        with open("/etc/auth_api_client.yaml") as fh:
             config = yaml.safe_load(fh)
     except Exception as e:
         sys.exit(f"Failed loading config: {e}")
