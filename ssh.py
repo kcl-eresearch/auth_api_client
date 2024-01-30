@@ -6,13 +6,13 @@ import pwd
 import psutil
 import sys
 from auth_api_client import config
-from auth_api_client.common import get_ssh_keys, load_config, log_error, log_info
+from auth_api_client.common import get_ssh_keys, load_config, log_error
 
 CMD_RSYNC = "/usr/bin/rrsync /"
 CMD_SFTP="internal-sftp"
 CMD_BOGUS="/usr/sbin/nologin"
 
-load_config
+load_config()
 
 ppid = os.getppid()
 p_sshd = psutil.Process(ppid)
