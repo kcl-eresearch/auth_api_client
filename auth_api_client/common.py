@@ -1,20 +1,21 @@
 import datetime
+import json
 import os
-import pwd
 import requests
 import sys
 import syslog
 import time
 import yaml
+from auth_api_client import config
 
 def load_config():
-    global config
-
     try:
         with open("/etc/auth_api_client.yaml") as fh:
-            config = yaml.safe_load(fh)
+            config.config = yaml.safe_load(fh)
     except Exception as e:
         sys.exit(f"Failed loading config: {e}")
+
+    return config
 
 def log_error(message):
     sys.stderr.write(f"{message}\n")
@@ -22,17 +23,14 @@ def log_error(message):
 def log_info(message):
     syslog.syslog(syslog.LOG_INFO | syslog.LOG_AUTHPRIV, message)
 
-def get_ssh_keys(username, remote_ip=None):
-    global API_VERSION
-    global config
-
-    if remote_ip:
-        url = f"https://{config['host']}/v{API_VERSION}/ssh_auth/{username}/{remote_ip}"
-        timeout = time.time() + config["timeout"]
+def get_ssh_keys(username, remote_ip=None, ppid=None):
+    if remote_ip and ppid:
+        url = f"https://{config.config['host']}/v{config.API_VERSION}/ssh_auth/{username}/{remote_ip}"
+        timeout = time.time() + config.config["timeout"]
         log_info("Processing auth request: %s" % json.dumps({"username": username, "remote_ip": remote_ip, "pid": os.getpid(), "ppid": ppid}))
         while time.time() < timeout:
             try:
-                r = requests.get(url, auth=(config["username"], config["password"]))
+                r = requests.get(url, auth=(config.config["username"], config.config["password"]))
                 if r.status_code == 200:
                     try:
                         response = r.json()
@@ -63,9 +61,9 @@ def get_ssh_keys(username, remote_ip=None):
         log_info(f"Rejecting authentication for {username} from {remote_ip}: timeout")
         return []
     else:
-        url = f"https://{config['host']}/v{API_VERSION}/ssh_keys/{username}"
+        url = f"https://{config.config['host']}/v{config.API_VERSION}/ssh_keys/{username}"
         try:
-            r = requests.get(url, auth=(config["username"], config["password"]))
+            r = requests.get(url, auth=(config.config["username"], config.config["password"]))
             if r.status_code == 200:
                 try:
                     response = r.json()

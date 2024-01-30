@@ -5,14 +5,13 @@ import os
 import pwd
 import psutil
 import sys
+from auth_api_client import config
 from auth_api_client.common import get_ssh_keys, load_config, log_error, log_info
 
-API_VERSION = 1
 CMD_RSYNC = "/usr/bin/rrsync /"
 CMD_SFTP="internal-sftp"
 CMD_BOGUS="/usr/sbin/nologin"
 
-config = {}
 load_config
 
 ppid = os.getppid()
@@ -44,12 +43,12 @@ if not remote_ip:
     sys.exit(1)
 
 # Drop root privileges no longer required
-pwentry = pwd.getpwnam(config["run_as"])
+pwentry = pwd.getpwnam(config.config["run_as"])
 os.setgid(pwentry.pw_gid)
 os.setgroups([])
 os.setuid(pwentry.pw_uid)
 
-for key in get_ssh_keys(user.pw_name, remote_ip):
+for key in get_ssh_keys(user.pw_name, remote_ip, ppid):
     restrictions = []
     if key["allowed_ips"]:
         try:

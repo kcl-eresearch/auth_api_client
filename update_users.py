@@ -3,32 +3,22 @@
 import requests
 import socket
 import sys
-import syslog
 import yaml
-
-def log_error(message):
-    syslog.syslog(syslog.LOG_ERR, message)
-    sys.stderr.write(f"{message}\n")
-
-def log_info(message):
-    syslog.syslog(syslog.LOG_INFO, message)
-    print(message)
-
-# Must be integer
-API_VERSION = 1
+from auth_api_client import config
+from auth_api_client.common import log_error, log_info
 
 try:
     with open("/etc/auth_api/maint_auth.yaml") as fh:
-        config = yaml.safe_load(fh)
+        maint_config = yaml.safe_load(fh)
 except Exception as e:
     log_error(f"Failed loading config: {e}")
     sys.exit(1)
 
 fqdn = socket.getfqdn()
-url = f"https://{fqdn}/v{API_VERSION}/maint/update_users"
+url = f"https://{fqdn}/v{config.API_VERSION}/maint/update_users"
 
 try:
-    r = requests.post(url, auth=(config["username"], config["password"]))
+    r = requests.post(url, auth=(maint_config["username"], maint_config["password"]))
 except Exception as e:
     log_error(f"Failed during POST request: {e}")
     sys.exit(1)

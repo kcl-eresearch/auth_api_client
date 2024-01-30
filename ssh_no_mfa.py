@@ -7,10 +7,9 @@ import os
 import json
 import pwd
 import sys
-import yaml
+from auth_api_client import config
 from auth_api_client.common import get_ssh_keys, load_config, log_error
 
-API_VERSION = 1
 CMD_MAP = {
     "rsync": "/usr/bin/rrsync /",
     "rsync_ro": "/usr/bin/rrsync -ro /",
@@ -20,7 +19,6 @@ CMD_MAP = {
 CMD_BOGUS = "/usr/sbin/nologin"
 SCRIPT_NAME = os.path.basename(sys.argv[0]).split(".")[0]
 
-config = {}
 load_config()
 
 if len(sys.argv) < 2:
@@ -34,7 +32,7 @@ except Exception as e:
     sys.exit(1)
 
 # Drop root privileges no longer required
-pwentry = pwd.getpwnam(config["run_as"])
+pwentry = pwd.getpwnam(config.config["run_as"])
 os.setgid(pwentry.pw_gid)
 os.setgroups([])
 os.setuid(pwentry.pw_uid)

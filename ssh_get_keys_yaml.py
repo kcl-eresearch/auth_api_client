@@ -6,10 +6,9 @@ import os
 import pwd
 import sys
 import yaml
+from auth_api_client import config
 from auth_api_client.common import get_ssh_keys, load_config, log_error
 
-API_VERSION = 1
-config = {}
 load_config()
 
 if len(sys.argv) < 2:

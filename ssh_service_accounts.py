@@ -6,10 +6,9 @@
 import os
 import pwd
 import sys
+from auth_api_client import config
 from auth_api_client.common import get_ssh_keys, load_config, log_error
 
-API_VERSION = 1
-config = {}
 load_config()
 
 if len(sys.argv) < 2:
@@ -22,17 +21,17 @@ except Exception as e:
     log_error("Invalid user specified")
     sys.exit(1)
 
-if "service_account_restrict_users" in config and user.pw_name in config["service_account_restrict_users"]:
-    ip_allowed = config["service_account_restrict_users"][user.pw_name]
-elif "service_account_restrict" in config:
-    ip_allowed = config["service_account_restrict"]
+if "service_account_restrict_users" in config.config and user.pw_name in config.config["service_account_restrict_users"]:
+    ip_allowed = config.config["service_account_restrict_users"][user.pw_name]
+elif "service_account_restrict" in config.config:
+    ip_allowed = config.config["service_account_restrict"]
 else:
     ip_allowed = ["127.0.0.0/8"]
 
 ip_allowed_csv = ",".join(ip_allowed)
 
 # Drop root privileges no longer required
-pwentry = pwd.getpwnam(config["run_as"])
+pwentry = pwd.getpwnam(config.config["run_as"])
 os.setgid(pwentry.pw_gid)
 os.setgroups([])
 os.setuid(pwentry.pw_uid)

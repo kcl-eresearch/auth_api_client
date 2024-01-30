@@ -3,6 +3,7 @@
 import argparse
 import sys
 import tabulate
+from auth_api_client import config
 from auth_api_client.common import api_get, format_ts, heading, load_config, validate_user
 
 parser = argparse.ArgumentParser()
@@ -18,8 +19,6 @@ if not (args.user or args.mfa):
     sys.stderr.write("Please specify either --mfa or --user USER\n")
     sys.exit(1)
 
-API_VERSION = 1
-config = {}
 load_config()
 
 if args.user:
