@@ -61,7 +61,7 @@ def get_ssh_keys(username, remote_ip=None, ppid=None):
         log_info(f"Rejecting authentication for {username} from {remote_ip}: timeout")
         return []
     else:
-        url = f"https://{config.config['host']}{config.path}/ssh_keys/{username}"
+        url = f"https://{config.config['host']}{config.config['path']}/ssh_keys/{username}"
         try:
             r = requests.get(url, auth=(config.config["username"], config.config["password"]))
             if r.status_code == 200:
