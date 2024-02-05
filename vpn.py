@@ -16,22 +16,22 @@ def auth_vpn_group(username):
     try:
         with open("/etc/openvpn_groups.yaml") as fh:
             openvpn_groups = yaml.safe_load(fh)
-    
+
     except Exception as e:
         log_error("Failed loading group list: %s" % e)
         return False
-    
+
     user_group_ids = []
     try:
         user_group_ids = os.getgrouplist(username, pwd.getpwnam(username).pw_gid)
     except Exception as e:
         log_error("Failed getting group information for user %s: %e" % (username, e))
         return False
-    
+
     for group_id in user_group_ids:
         if grp.getgrgid(group_id).gr_name in openvpn_groups:
             return True
-    
+
     return False
 
 def auth_vpn_mfa_bypass(cert_cn, remote_ip):
@@ -40,21 +40,21 @@ def auth_vpn_mfa_bypass(cert_cn, remote_ip):
             bypass_addresses = yaml.safe_load(fh)
     except Exception:
         return False
-    
+
     if bypass_addresses == None:
         return False
-    
+
     if not remote_ip in bypass_addresses:
         return False
-    
+
     for cn in bypass_addresses[remote_ip]:
         if cn == cert_cn:
             return True
-    
+
     return False
 
 def auth_vpn_access(cert_cn, remote_ip):
-    url = f"https://{config.config['host']}/v{config.API_VERSION}/vpn_auth/{cert_cn}/{remote_ip}"
+    url = f"https://{config.config['host']}{config.path}/vpn_auth/{cert_cn}/{remote_ip}"
     timeout = time.time() + config.config["timeout"]
 
     if auth_vpn_mfa_bypass(cert_cn, remote_ip):
@@ -72,7 +72,7 @@ def auth_vpn_access(cert_cn, remote_ip):
                             if auth_vpn_group(response['username']):
                                 log_info(f"Accepting authentication for {response['username']} from {remote_ip} with certificate {cert_cn}")
                                 return 0
-                               
+
                             else:
                                 log_info(f"Rejecting authentication for {response['username']} from {remote_ip} with certificate {cert_cn}: not in access groups")
                                 return 1
