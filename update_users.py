@@ -15,7 +15,7 @@ except Exception as e:
     sys.exit(1)
 
 fqdn = socket.getfqdn()
-url = f"https://{fqdn}{config.config['path']}/maint/update_users"
+url = f"https://{fqdn}/api/v{config.API_VERSION}/maint/update_users"
 
 try:
     r = requests.post(url, auth=(maint_config["username"], maint_config["password"]))

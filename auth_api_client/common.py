@@ -25,7 +25,7 @@ def log_info(message):
 
 def get_ssh_keys(username, remote_ip=None, ppid=None):
     if remote_ip and ppid:
-        url = f"https://{config.config['host']}{config.config['path']}/ssh_auth/{username}/{remote_ip}"
+        url = f"https://{config.config['host']}/api/v{config.API_VERSION}/ssh_auth/{username}/{remote_ip}"
         timeout = time.time() + config.config["timeout"]
         log_info("Processing auth request: %s" % json.dumps({"username": username, "remote_ip": remote_ip, "pid": os.getpid(), "ppid": ppid}))
         while time.time() < timeout:
@@ -61,7 +61,7 @@ def get_ssh_keys(username, remote_ip=None, ppid=None):
         log_info(f"Rejecting authentication for {username} from {remote_ip}: timeout")
         return []
     else:
-        url = f"https://{config.config['host']}{config.config['path']}/ssh_keys/{username}"
+        url = f"https://{config.config['host']}/api/v{config.API_VERSION}/ssh_keys/{username}"
         try:
             r = requests.get(url, auth=(config.config["username"], config.config["password"]))
             if r.status_code == 200:

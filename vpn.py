@@ -54,7 +54,7 @@ def auth_vpn_mfa_bypass(cert_cn, remote_ip):
     return False
 
 def auth_vpn_access(cert_cn, remote_ip):
-    url = f"https://{config.config['host']}{config.config['path']}/vpn_auth/{cert_cn}/{remote_ip}"
+    url = f"https://{config.config['host']}/api/v{config.API_VERSION}/vpn_auth/{cert_cn}/{remote_ip}"
     timeout = time.time() + config.config["timeout"]
 
     if auth_vpn_mfa_bypass(cert_cn, remote_ip):
