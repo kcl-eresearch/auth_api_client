@@ -1,0 +1,8 @@
+---
+# Example file for /etc/auth_api.yaml
+host: auth-api.example.com
+path: /api/v1
+username: auth_api_ldap_user
+password: top_secret_password
+timeout: 120
+run_as: auth_api
