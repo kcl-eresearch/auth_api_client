@@ -88,3 +88,8 @@ def heading(string):
 
 def format_ts(timestamp):
     return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+def get_ssh_key_extra_options(ssh_key):
+    if ssh_key["extra_options"] == None:
+        return {}
+    return json.loads(ssh_key["extra_options"])
