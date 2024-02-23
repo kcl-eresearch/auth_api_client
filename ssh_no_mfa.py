@@ -8,11 +8,12 @@ import json
 import pwd
 import sys
 from auth_api_client import config
-from auth_api_client.common import get_ssh_keys, load_config, log_error
+from auth_api_client.common import get_ssh_keys, load_config, log_error, get_ssh_key_extra_options
 
 CMD_MAP = {
-    "rsync": "/usr/bin/rrsync /",
-    "rsync_ro": "/usr/bin/rrsync -ro /",
+    "rsync": "/usr/bin/rrsync",
+    "rsync_ro": "/usr/bin/rrsync -ro",
+    "rsync_wo": "/usr/bin/rrsync -wo",
     "sftp": "internal-sftp",
     "sftp_ro": "internal-sftp -R"
 }
@@ -63,6 +64,13 @@ for key in get_ssh_keys(user.pw_name):
             command = CMD_MAP[key["access_type"]]
         else:
             command = CMD_BOGUS
+
+        if key["access_type"].startswith("rsync"):
+            extra_options = get_ssh_key_extra_options(key)
+            if "rsync_directory" in extra_options:
+                command += " %s" % extra_options["rsync_directory"]
+            else:
+                command += " /"
 
         restrictions.append("command=\"%s\"" % command)
 
