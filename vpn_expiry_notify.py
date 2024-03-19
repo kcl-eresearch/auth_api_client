@@ -41,4 +41,4 @@ if response["status"] == "ERROR":
     log_error(f"Error status from API, detail: {response['detail']}")
     sys.exit(1)
 
-log_info(f"OK, {response['changes']} changes")
+log_info(f"OK, {response['email_count']} emails sent")
