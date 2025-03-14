@@ -15,12 +15,6 @@ if len(sys.argv) < 2:
     log_error("No user specified")
     sys.exit(1)
 
-# Drop root privileges no longer required
-pwentry = pwd.getpwnam(config["run_as"])
-os.setgid(pwentry.pw_gid)
-os.setgroups([])
-os.setuid(pwentry.pw_uid)
-
 keys = []
 for key in get_ssh_keys(sys.argv[1]):
     keys.append(key)
