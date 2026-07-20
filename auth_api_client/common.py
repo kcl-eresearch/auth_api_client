@@ -18,6 +18,7 @@ def load_config():
     return config
 
 def log_error(message):
+    syslog.syslog(syslog.LOG_ERR | syslog.LOG_AUTHPRIV, message)
     sys.stderr.write(f"{message}\n")
 
 def log_info(message):
