@@ -21,8 +21,9 @@ load_config()
 
 ppid = os.getppid()
 p_sshd = psutil.Process(ppid)
-if p_sshd.exe() != "/usr/sbin/sshd":
-    log_error("Parent process is not sshd")
+p_exe = p_sshd.exe()
+if p_exe not in ["/usr/sbin/sshd", "/usr/libexec/openssh/sshd-session"]:
+    log_error("Parent process is not sshd, but %s" % p_exe)
     sys.exit(1)
 
 if len(sys.argv) < 2:
